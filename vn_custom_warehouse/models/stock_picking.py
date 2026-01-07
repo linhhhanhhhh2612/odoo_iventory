@@ -1,32 +1,30 @@
-from odoo import models, fields, api
+﻿from odoo import models, fields, api
 
 class StockPicking(models.Model):
-    _inherit = 'stock.picking' # Dòng này xác nhận chúng ta đang dùng lại module gốc
+    _inherit = 'stock.picking'
 
-    # 1. Phân loại mục đích (để lọc Menu A)
+    # Khai bao cac cot du lieu (Field)
     x_transaction_type = fields.Selection([
-        ('tam_ung', 'Tạm ứng vật tư'),
-        ('hoan_ung', 'Hoàn ứng vật tư'),
-        ('cap_linh_kien', 'Cấp linh kiện'),
-        ('nhap_hong', 'Nhập linh kiện hỏng'),
-        ('cap_san_xuat', 'Cấp vật tư sản xuất'),
-        ('tra_lai', 'Nhập kho hàng trả lại'),
-        ('xuat_kinh_doanh', 'Xuất kho kinh doanh'),
-        ('chuyen_noi_bo', 'Chuyển kho nội bộ'),
-        ('xuat_doi', 'Xuất đổi cấu hình'),
-        ('khac', 'Khác')
-    ], string='Mục đích nghiệp vụ', default='khac')
+        ('tam_ung', 'Tam ung vat tu'),
+        ('hoan_ung', 'Hoan ung vat tu'),
+        ('cap_linh_kien', 'Cap linh kien'),
+        ('nhap_hong', 'Nhap linh kien hong'),
+        ('cap_san_xuat', 'Cap vat tu san xuat'),
+        ('tra_lai', 'Nhap kho hang tra lai'),
+        ('xuat_kinh_doanh', 'Xuat kho kinh doanh'),
+        ('chuyen_noi_bo', 'Chuyen kho noi bo'),
+        ('xuat_doi', 'Xuat doi cau hinh'),
+        ('khac', 'Khac')
+    ], string='Muc dich nghiep vu', default='khac')
 
-    # 2. Trạng thái duyệt (để lọc Menu B)
     x_approval_state = fields.Selection([
-        ('draft', 'Mới tạo'),
-        ('waiting_warehouse', 'Chờ Thủ kho duyệt'),
-        ('waiting_accountant', 'Chờ Kế toán duyệt'),
-        ('approved', 'Hoàn thành'),
-        ('rejected', 'Từ chối')
-    ], string='Tiến trình duyệt', default='draft', tracking=True)
+        ('draft', 'Moi tao'),
+        ('waiting_warehouse', 'Cho Thu kho duyet'),
+        ('waiting_accountant', 'Cho Ke toan duyet'),
+        ('approved', 'Hoan thanh'),
+        ('rejected', 'Tu choi')
+    ], string='Tien trinh duyet', default='draft')
 
-    # Các hàm xử lý nút bấm
     def action_send_warehouse(self):
         self.write({'x_approval_state': 'waiting_warehouse'})
 
@@ -35,3 +33,18 @@ class StockPicking(models.Model):
 
     def action_approve_accountant(self):
         self.write({'x_approval_state': 'approved'})
+
+    def action_open_oca_scanner(self):
+        return
+    def action_open_oca_scanner(self):
+        self.ensure_one()
+        # Thay vì mở Client Action (cần module xịn), ta mở View Chi tiết (có sẵn)
+        return {
+            'name': 'Chi tiết hoạt động',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'list,form',
+            'res_model': 'stock.move.line', # Mở bảng chi tiết dòng
+            'domain': [('picking_id', '=', self.id)], # Lọc theo phiếu hiện tại
+            'context': {'default_picking_id': self.id},
+            'target': 'current',
+        }
