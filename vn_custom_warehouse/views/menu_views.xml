@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_vn_warehouse_root" name="QUẢN LÝ KHO (VN)" web_icon="stock,static/description/icon.png" sequence="1"/>
+
+    <menuitem id="menu_group_a" name="A. Kho hàng" parent="menu_vn_warehouse_root" sequence="10"/>
+
+    <record id="action_tam_ung" model="ir.actions.act_window">
+        <field name="name">Tạm ứng vật tư</field>
+        <field name="res_model">stock.picking</field>
+        <field name="view_mode">list,form</field> <field name="domain">[('x_transaction_type', '=', 'tam_ung')]</field>
+        <field name="context">{'default_x_transaction_type': 'tam_ung', 'default_picking_type_code': 'outgoing'}</field>
+    </record>
+    <menuitem id="menu_tam_ung" name="Tạm ứng vật tư" parent="menu_group_a" action="action_tam_ung" sequence="1"/>
+
+    <record id="action_hoan_ung" model="ir.actions.act_window">
+        <field name="name">Hoàn ứng vật tư</field>
+        <field name="res_model">stock.picking</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('x_transaction_type', '=', 'hoan_ung')]</field>
+        <field name="context">{'default_x_transaction_type': 'hoan_ung', 'default_picking_type_code': 'incoming'}</field>
+    </record>
+    <menuitem id="menu_hoan_ung" name="Hoàn ứng vật tư" parent="menu_group_a" action="action_hoan_ung" sequence="2"/>
+
+    <record id="action_chuyen_noi_bo" model="ir.actions.act_window">
+        <field name="name">Chuyển kho nội bộ</field>
+        <field name="res_model">stock.picking</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('x_transaction_type', '=', 'chuyen_noi_bo')]</field>
+        <field name="context">{'default_x_transaction_type': 'chuyen_noi_bo', 'default_picking_type_code': 'internal'}</field>
+    </record>
+    <menuitem id="menu_chuyen_noi_bo" name="Chuyển kho nội bộ" parent="menu_group_a" action="action_chuyen_noi_bo" sequence="3"/>
+
+    <menuitem id="menu_group_b" name="B. Duyệt &amp; Xử lý" parent="menu_vn_warehouse_root" sequence="20"/>
+
+    <record id="action_cho_thu_kho" model="ir.actions.act_window">
+        <field name="name">Hàng chờ Thủ kho</field>
+        <field name="res_model">stock.picking</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('x_approval_state', '=', 'waiting_warehouse')]</field>
+    </record>
+    <menuitem id="menu_cho_thu_kho" name="Hàng chờ Thủ kho" parent="menu_group_b" action="action_cho_thu_kho" sequence="1"/>
+
+    <record id="action_cho_ke_toan" model="ir.actions.act_window">
+        <field name="name">Hàng chờ Kế toán</field>
+        <field name="res_model">stock.picking</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('x_approval_state', '=', 'waiting_accountant')]</field>
+    </record>
+    <menuitem id="menu_cho_ke_toan" name="Hàng chờ Kế toán" parent="menu_group_b" action="action_cho_ke_toan" sequence="2"/>
+
+    <menuitem id="menu_group_d" name="D. Danh mục" parent="menu_vn_warehouse_root" sequence="40"/>
+    
+    <menuitem id="menu_d_product" name="Sản phẩm" parent="menu_group_d" action="stock.product_template_action_product"/>
+    
+    <menuitem id="menu_d_location" name="Kho &amp; Vị trí" parent="menu_group_d" action="stock.action_location_form"/>
+</odoo>

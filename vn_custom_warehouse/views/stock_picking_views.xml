@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_picking_form_custom_vn" model="ir.ui.view">
+        <field name="name">stock.picking.form.custom.vn</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <field name="origin" position="after">
+                <field name="x_transaction_type" widget="radio"/>
+                <field name="x_approval_state" widget="statusbar" statusbar_visible="draft,waiting_warehouse,waiting_accountant,approved"/>
+            </field>
+
+            <header position="inside">
+                <button name="action_send_warehouse" string="Gửi Thủ kho" type="object" class="oe_highlight" 
+                        invisible="x_approval_state != 'draft'"/>
+                <button name="action_approve_warehouse" string="Thủ kho Duyệt" type="object" class="oe_highlight" 
+                        invisible="x_approval_state != 'waiting_warehouse'"/>
+                <button name="action_approve_accountant" string="Kế toán Duyệt" type="object" class="oe_highlight" 
+                        invisible="x_approval_state != 'waiting_accountant'"/>
+            </header>
+        </field>
+    </record>
+
+    <record id="view_picking_list_custom_vn" model="ir.ui.view">
+        <field name="name">stock.picking.list.custom.vn</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree"/>
+        <field name="arch" type="xml">
+            <field name="state" position="before">
+                <field name="x_transaction_type" optional="show"/>
+                <field name="x_approval_state" widget="badge"
+                       decoration-info="x_approval_state == 'draft'" 
+                       decoration-warning="x_approval_state in ('waiting_warehouse','waiting_accountant')" 
+                       decoration-success="x_approval_state == 'approved'"/>
+            </field>
+        </field>
+    </record>
+</odoo>
