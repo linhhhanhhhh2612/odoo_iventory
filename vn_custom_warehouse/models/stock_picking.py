@@ -3,7 +3,6 @@
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
-    # Khai bao cac cot du lieu (Field)
     x_transaction_type = fields.Selection([
         ('tam_ung', 'Tam ung vat tu'),
         ('hoan_ung', 'Hoan ung vat tu'),
@@ -34,17 +33,22 @@ class StockPicking(models.Model):
     def action_approve_accountant(self):
         self.write({'x_approval_state': 'approved'})
 
-    def action_open_oca_scanner(self):
-        return
+    # HAM TU CHOI (Quan trong nhat)
+    def action_reject(self):
+        self.write({'x_approval_state': 'rejected'})
+
+    # HAM LAM LAI
+    def action_reset_draft(self):
+        self.write({'x_approval_state': 'draft'})
+
     def action_open_oca_scanner(self):
         self.ensure_one()
-        # Thay vì mở Client Action (cần module xịn), ta mở View Chi tiết (có sẵn)
         return {
-            'name': 'Chi tiết hoạt động',
+            'name': 'Chi tiet hoat dong',
             'type': 'ir.actions.act_window',
             'view_mode': 'list,form',
-            'res_model': 'stock.move.line', # Mở bảng chi tiết dòng
-            'domain': [('picking_id', '=', self.id)], # Lọc theo phiếu hiện tại
+            'res_model': 'stock.move.line',
+            'domain': [('picking_id', '=', self.id)],
             'context': {'default_picking_id': self.id},
             'target': 'current',
         }

@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_product_template_tree_custom_vn" model="ir.ui.view">
+        <field name="name">product.template.tree.custom.vn</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="." position="attributes">
+                <attribute name="decoration-danger">qty_available &lt; x_min_quantity and x_min_quantity &gt; 0</attribute>
+                <attribute name="decoration-bf">qty_available &lt; x_min_quantity and x_min_quantity &gt; 0</attribute>
+            </xpath>
+            <field name="qty_available" position="after">
+                <field name="x_min_quantity" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_product_template_form_custom_vn" model="ir.ui.view">
+        <field name="name">product.template.form.custom.vn</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <field name="categ_id" position="after">
+                <field name="x_min_quantity" class="oe_inline"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_product_template_kanban_custom_vn" model="ir.ui.view">
+        <field name="name">product.template.kanban.custom.vn</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_kanban_view"/>
+        <field name="arch" type="xml">
+            
+            <xpath expr="//templates" position="before">
+                <field name="x_min_quantity"/>
+                <field name="qty_available"/>
+            </xpath>
+            
+            <xpath expr="//field[@name='name']" position="before">
+                <widget name="web_ribbon" title="SẮP HẾT" bg_color="bg-danger"
+                        invisible="qty_available &gt;= x_min_quantity or x_min_quantity == 0"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

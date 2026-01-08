@@ -1,31 +1,78 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="view_picking_form_custom_vn" model="ir.ui.view">
         <field name="name">stock.picking.form.custom.vn</field>
         <field name="model">stock.picking</field>
         <field name="inherit_id" ref="stock.view_picking_form"/>
         <field name="arch" type="xml">
+            
+            <xpath expr="//page[@name='operations']" position="attributes">
+                <attribute name="string">Chi tiết hoá đơn</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='%(stock.act_stock_return_picking)d']" position="attributes">
+                <attribute name="invisible">state != 'done'</attribute>
+            </xpath>
+
             <field name="origin" position="after">
-                </field>
+                <field name="x_transaction_type" widget="radio" string="Mục đích nghiệp vụ"/>
+                <field name="x_approval_state" widget="statusbar" statusbar_visible="draft,waiting_warehouse,waiting_accountant,approved"/>
+            </field>
 
             <header position="inside">
-                <button name="action_open_oca_scanner" 
-                        string="📱 Mở Giao Diện Quét" 
-                        type="object" 
-                        class="oe_highlight btn-danger" 
-                        invisible="state == 'done'"/>
+                <button name="action_open_oca_scanner" string="📱 Mở Giao Diện Quét" type="object" class="oe_highlight btn-info" invisible="state == 'done'"/>
                 
-                </header>
+                <button name="action_send_warehouse" string="Gửi Thủ kho" type="object" class="oe_highlight" 
+                        invisible="x_approval_state != 'draft'"/>
+
+                <button name="action_approve_warehouse" string="Thủ kho Duyệt" type="object" class="oe_highlight" 
+                        invisible="x_approval_state != 'waiting_warehouse'"
+                        groups="vn_custom_warehouse.group_vn_stock_manager"/>
+                
+                <button name="action_approve_accountant" string="Kế toán Duyệt" type="object" class="oe_highlight" 
+                        invisible="x_approval_state != 'waiting_accountant'"
+                        groups="vn_custom_warehouse.group_vn_accountant"/>
+                
+                <button name="action_reject" string="Từ chối" type="object" class="btn-danger" 
+                        invisible="x_approval_state not in ('waiting_warehouse', 'waiting_accountant')"
+                        groups="vn_custom_warehouse.group_vn_stock_manager,vn_custom_warehouse.group_vn_accountant"/>
+
+                <button name="action_reset_draft" string="Làm lại (Reset)" type="object" class="btn-secondary" 
+                        invisible="x_approval_state != 'rejected'"/>
+            </header>
         </field>
     </record>
 
-    <record id="view_picking_list_custom_vn" model="ir.ui.view">
-        <field name="name">stock.picking.list.custom.vn</field>
+    <record id="view_picking_tree_custom_vn" model="ir.ui.view">
+        <field name="name">stock.picking.tree.custom.vn</field>
         <field name="model">stock.picking</field>
         <field name="inherit_id" ref="stock.vpicktree"/>
         <field name="arch" type="xml">
             <field name="state" position="before">
-                </field>
+                <field name="x_transaction_type" optional="show" string="Mục đích nghiệp vụ" widget="badge" decoration-muted="True"/>
+                <field name="x_approval_state" widget="badge" string="Tiến trình duyệt"
+                       decoration-success="x_approval_state == 'approved'"
+                       decoration-info="x_approval_state == 'draft'"
+                       decoration-warning="x_approval_state in ('waiting_warehouse','waiting_accountant')" 
+                       decoration-danger="x_approval_state == 'rejected'"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_picking_tree_approval_mode" model="ir.ui.view">
+        <field name="name">stock.picking.tree.approval.mode</field>
+        <field name="model">stock.picking</field>
+        <field name="priority">50</field>
+        <field name="arch" type="xml">
+            <list string="Duyệt phiếu" decoration-warning="x_approval_state in ('waiting_warehouse','waiting_accountant')" sample="1">
+                <field name="name" string="Mã phiếu"/>
+                <field name="partner_id" string="Đối tác/Liên hệ"/>
+                <field name="scheduled_date" widget="remaining_days"/>
+                <field name="origin" string="Chứng từ gốc"/>
+                <field name="x_transaction_type" widget="badge" decoration-info="True"/>
+                <field name="x_approval_state" widget="badge" decoration-warning="True"/>
+                <field name="state" widget="badge" decoration-muted="True" string="Trạng thái Odoo"/>
+            </list>
         </field>
     </record>
 </odoo>
